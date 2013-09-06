@@ -90,9 +90,11 @@ class CachedSession(OriginalSession):
         if response is None:
             return send_request_and_cache_response()
 
+	#Monkey patch here so we don't save invalid 200 responses, we check by length
         if self._cache_expire_after is not None:
+	    req = self.cache.get_response_and_time(cache_key)[0]
             difference = datetime.utcnow() - timestamp
-            if difference > timedelta(seconds=self._cache_expire_after):
+            if difference > timedelta(seconds=self._cache_expire_after) or (req and len(req.text)<200):
                 self.cache.delete(cache_key)
                 return send_request_and_cache_response()
         # dispatch hook here, because we've removed it before pickling
