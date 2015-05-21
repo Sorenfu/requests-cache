@@ -94,7 +94,7 @@ class CachedSession(OriginalSession):
         if self._cache_expire_after is not None:
 	    req = self.cache.get_response_and_time(cache_key)[0]
             difference = datetime.utcnow() - timestamp
-            if difference > timedelta(seconds=self._cache_expire_after) or (req and len(req.text)<200):
+            if difference > timedelta(seconds=self._cache_expire_after) or (req and len(req.text)<400):
                 self.cache.delete(cache_key)
                 return send_request_and_cache_response()
         # dispatch hook here, because we've removed it before pickling
